@@ -75,8 +75,8 @@ CREATE TABLE Construtores (
 DROP TABLE IF EXISTS Pilotos CASCADE;
 CREATE TABLE Pilotos (
         Nome VARCHAR(100) PRIMARY KEY,
-        Numero SMALLINT NOT NULL,
-        Codigo CHAR(3) NOT NULL,
+        Numero SMALLINT,
+        Codigo CHAR(3),
         DataNascimento DATE NOT NULL,
         NomePais VARCHAR(60) NOT NULL,
         FOREIGN KEY (NomePais)
