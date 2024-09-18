@@ -9,23 +9,24 @@ CREATE TABLE Cidades (
         FOREIGN KEY (NomePais) 
                 REFERENCES Paises (NomePais) 
                         ON UPDATE CASCADE,
-        CHECK (Populacao >= 0)
+        CHECK (Populacao >= 0),
+        UNIQUE (Nome, NomePais)
 );
 
 DROP TABLE IF EXISTS Aeroportos;
 CREATE TABLE Aeroportos (
-        ICAO CHAR(4) PRIMARY KEY,
-        IATA CHAR(3) NOT NULL,
+        ICAO VARCHAR(10) PRIMARY KEY,
+        IATA CHAR(3),
         Nome VARCHAR(100) NOT NULL,
         Latitude DOUBLE PRECISION NOT NULL,
         Longitude DOUBLE PRECISION NOT NULL,
-        Altitude DOUBLE PRECISION NOT NULL,
+        Altitude DOUBLE PRECISION,
         LatitudeCidade DOUBLE PRECISION NOT NULL,
         LongitudeCidade DOUBLE PRECISION NOT NULL,
         NomePais VARCHAR(60) NOT NULL,
-        FOREIGN KEY (NomePais)
-                REFERENCES Paises (NomePais)
-                        ON UPDATE CASCADE,
+        -- FOREIGN KEY (NomePais)
+        --         REFERENCES Paises (NomePais)
+        --                 ON UPDATE CASCADE,
         FOREIGN KEY (LatitudeCidade, LongitudeCidade)
                 REFERENCES Cidades (Latitude, Longitude)
                         ON UPDATE CASCADE
@@ -38,10 +39,10 @@ CREATE TABLE Circuitos (
         Longitude DOUBLE PRECISION NOT NULL,
         NomeResum VARCHAR(40),
         LatitudeCidade DOUBLE PRECISION NOT NULL,
-        LongitudeCidade DOUBLE PRECISION NOT NULL,
-        FOREIGN KEY (LatitudeCidade, LongitudeCidade)
-                REFERENCES Cidades (Latitude, Longitude)
-                        ON UPDATE CASCADE
+        LongitudeCidade DOUBLE PRECISION NOT NULL
+        -- FOREIGN KEY (LatitudeCidade, LongitudeCidade)
+        --         REFERENCES Cidades (Latitude, Longitude)
+        --                 ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS Corridas CASCADE;
@@ -52,7 +53,7 @@ CREATE TABLE Corridas (
         Rodada SMALLINT NOT NULL,
         Temporada SMALLINT NOT NULL,
         Nome VARCHAR(100) NOT NULL,
-        Hora TIME NOT NULL,
+        Hora TIME,
         DataCorrida DATE NOT NULL,
         PRIMARY KEY (ID, NomeCircuito),
         FOREIGN KEY (NomeCircuito)
@@ -92,7 +93,7 @@ CREATE TABLE ClassificacaoPilotos (
         NomePiloto VARCHAR(100),
         Pontuacao SMALLINT NOT NULL,
         Posicao SMALLINT NOT NULL,
-        EhVencedor BOOLEAN NOT NULL,
+        Vitorias SMALLINT NOT NULL,
         PRIMARY KEY (IDCorrida, NomeCircuito, NomePiloto),
         FOREIGN KEY (IDCorrida, NomeCircuito)
                 REFERENCES Corridas (ID, NomeCircuito)
@@ -133,12 +134,12 @@ CREATE TABLE Resultados (
         NomeCircuito VARCHAR(100),
         NomePiloto VARCHAR(100),
         IDConstrutor INTEGER NOT NULL,
-        PosicaoGrid SMALLINT NOT NULL,
-        PosicaoFinal SMALLINT NOT NULL,
+        PosicaoGrid SMALLINT,
+        PosicaoFinal SMALLINT,
         QTDPontos SMALLINT NOT NULL,
         QTDVoltas SMALLINT NOT NULL,
-        TempoHrs TIME,
-        TempoMs TIME,
+        TempoHrs VARCHAR(100),
+        TempoMs NUMERIC,
         DescricaoStatus VARCHAR(100) NOT NULL,
         PRIMARY KEY (IDCorrida, NomeCircuito, NomePiloto),
         FOREIGN KEY (IDCorrida, NomeCircuito)
@@ -153,8 +154,6 @@ CREATE TABLE Resultados (
         FOREIGN KEY (DescricaoStatus)
                 REFERENCES Status (Descricao)
                         ON UPDATE CASCADE,
-        CHECK (PosicaoGrid > 0),
-        CHECK (PosicaoFinal > 0),
         CHECK (QTDPontos >= 0),
         CHECK (QTDVoltas >= 0)
 );
@@ -177,8 +176,8 @@ CREATE TABLE Voltas (
         NrVolta SMALLINT,
         Posicao SMALLINT NOT NULL,
         TempoMin TIME NOT NULL,
-        TempoMs TIME NOT NULL,
-        Velocidade DOUBLE PRECISION NOT NULL,
+        TempoMs NUMERIC NOT NULL,
+        Velocidade DOUBLE PRECISION,
         PRIMARY KEY (IDCorrida, NomeCircuito, NomePiloto, NrVolta),
         FOREIGN KEY (IDCorrida, NomeCircuito)
                 REFERENCES Corridas (ID, NomeCircuito)
@@ -198,8 +197,8 @@ CREATE TABLE PitStop (
         NrVolta SMALLINT,
         Numero SMALLINT,
         Tempo TIME NOT NULL,
-        DuracaoMin TIME NOT NULL,
-        DuracaoMs TIME NOT NULL,
+        DuracaoMin VARCHAR(100) NOT NULL,
+        DuracaoMs VARCHAR(100) NOT NULL,
         PRIMARY KEY (IDCorrida, NomeCircuito, NomePiloto, NrVolta, Numero),
         FOREIGN KEY (IDCorrida, NomeCircuito, NomePiloto, NrVolta)
                 REFERENCES Voltas (IDCorrida, NomeCircuito, NomePiloto, NrVolta)
